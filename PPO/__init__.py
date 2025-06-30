@@ -1,6 +1,6 @@
 """Simplified PPO components."""
 
-from .Recurrent_ActorCritic import Memory, RecurrentActorCritic
+from .ActorCritic import Memory, ActorCritic
 from .PPO import PPO
 
-__all__ = ["Memory", "RecurrentActorCritic", "PPO"]
+__all__ = ["Memory", "ActorCritic", "PPO"]

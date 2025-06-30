@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from .Recurrent_ActorCritic import RecurrentActorCritic, Memory
+from .ActorCritic import ActorCritic, Memory
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -28,21 +28,19 @@ class PPO:
         self.eps_clip = eps_clip
         self.K_epochs = K_epochs
 
-        self.policy = RecurrentActorCritic(state_dim, action_dim).to(device)
-        self.policy_old = RecurrentActorCritic(state_dim, action_dim).to(device)
+        self.policy = ActorCritic(state_dim, action_dim).to(device)
+        self.policy_old = ActorCritic(state_dim, action_dim).to(device)
         self.policy_old.load_state_dict(self.policy.state_dict())
 
         self.optimizer = torch.optim.Adam(self.policy.parameters(), lr=lr, betas=betas)
         self.mse = nn.MSELoss()
 
         self.memory = Memory()
-        self.hidden = self.policy.init_hidden()
 
-    def select_action(self, state: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    def select_action(self, state: torch.Tensor) -> torch.Tensor:
         """Sample an action using the old policy and record transition."""
-        action, next_h = self.policy_old.act(state, self.hidden, self.memory)
-        self.hidden = next_h.detach()
-        return action, self.hidden
+        action = self.policy_old.act(state, self.memory)
+        return action
 
     def _compute_returns(self) -> torch.Tensor:
         rewards = []
@@ -59,13 +57,12 @@ class PPO:
     def update(self) -> None:
         returns = self._compute_returns()
         old_states = torch.cat(self.memory.states, 0).to(device)
-        old_hiddens = torch.cat(self.memory.hiddens).to(device)
         old_actions = torch.stack(self.memory.actions).to(device).squeeze()
         old_logprobs = torch.stack(self.memory.logprobs).to(device)
 
         for _ in range(self.K_epochs):
             logprobs, state_values, dist_entropy = self.policy.evaluate(
-                old_states, old_hiddens, old_actions
+                old_states, old_actions
             )
             ratios = torch.exp(logprobs - old_logprobs.detach())
             advantages = returns - state_values.detach()
@@ -84,4 +81,3 @@ class PPO:
 
         self.policy_old.load_state_dict(self.policy.state_dict())
         self.memory.clear()
-        self.hidden = self.policy.init_hidden()

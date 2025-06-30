@@ -37,7 +37,6 @@ class PPOICMAgent(BaseAgent):
 
     def end_episode(self) -> None:
         self.algo.memory.clear()
-        self.algo.hidden = self.algo.policy.init_hidden()
         self.last_state = None
 
     def train(self, results: Results):
@@ -67,7 +66,7 @@ class PPOICMAgent(BaseAgent):
 
     def get_action(self, observation, action_space=None, hidden=None):
         state = torch.tensor(observation, dtype=torch.float32).unsqueeze(0).to(device)
-        action, self.algo.hidden = self.algo.select_action(state)
+        action = self.algo.select_action(state)
         self.last_state = state
         return int(action.item())
 

@@ -31,7 +31,6 @@ class PPOAgent(BaseAgent):
 
     def end_episode(self) -> None:
         self.algo.memory.clear()
-        self.algo.hidden = self.algo.policy.init_hidden()
 
     def train(self, results: Results):
         self.algo.memory.rewards.append(results.reward)
@@ -41,7 +40,7 @@ class PPOAgent(BaseAgent):
 
     def get_action(self, observation, action_space=None, hidden=None):
         state = torch.tensor(observation, dtype=torch.float32).unsqueeze(0).to(device)
-        action, self.algo.hidden = self.algo.select_action(state)
+        action = self.algo.select_action(state)
         return int(action.item())
 
     def set_initial_values(self, action_space, observation):
