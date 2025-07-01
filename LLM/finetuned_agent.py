@@ -2,13 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-try:
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-    import torch
-except Exception:  # pragma: no cover - optional dependency
-    AutoModelForCausalLM = None
-    AutoTokenizer = None
-    torch = None
+
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
 
 from .base import BaseLLMAgent
 from .langraph_utils import build_generation_graph

@@ -1,18 +1,3 @@
-"""Intrinsic Curiosity Module (ICM).
-
-This module implements the curiosity mechanism from `Curiosity-driven
-Exploration by Self-supervised Prediction` (Pathak et al.).  It contains
-two components:
-
-1. **Forward Model** – predicts the feature representation of the next
-   observation given the current observation and action.
-2. **Inverse Model** – predicts the action taken given the current and
-   next feature representations.
-
-The prediction error of the forward model is used as an intrinsic reward
-to encourage exploration of unseen states.
-"""
-
 import torch
 import torch.nn as nn
 
@@ -31,16 +16,14 @@ class ICM(nn.Module):
             nn.ReLU(),
         )
 
-        # Forward model predicts next state features from current features
-        # and the executed action
+        # Forward model predicts next state features from current features and the executed action
         self.forward_model = nn.Sequential(
             nn.Linear(feature_dim + action_dim, feature_dim),
             nn.ReLU(),
             nn.Linear(feature_dim, feature_dim),
         )
 
-        # Inverse model predicts the taken action from the pair of
-        # consecutive state features
+        # Inverse model predicts the taken action from the pair of consecutive state features
         self.inverse_model = nn.Sequential(
             nn.Linear(feature_dim * 2, feature_dim),
             nn.ReLU(),

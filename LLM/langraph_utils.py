@@ -1,15 +1,12 @@
-try:
-    from langgraph.graph import StateGraph
-except Exception:  # pragma: no cover - optional dependency
-    StateGraph = None
-
+from langgraph.graph import StateGraph
+from typing import Dict
+from IPython.display import Image, display
 
 def build_generation_graph(model, tokenizer, device):
     """Return a Langraph graph that generates a single action token."""
     if StateGraph is None:
         raise ImportError("langraph is required for LLM agents")
 
-    from typing import Dict
 
     # Define the transformation function used by the single node
     def generate_fn(data: Dict[str, str]) -> Dict[str, str]:
@@ -25,3 +22,5 @@ def build_generation_graph(model, tokenizer, device):
     graph.set_entry_point("generate")
     graph.set_finish_point("generate")
     return graph.compile()
+
+# graph = build_generation_graph()

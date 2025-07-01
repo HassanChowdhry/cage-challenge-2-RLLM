@@ -2,7 +2,7 @@ import torch
 from CybORG.Agents import BaseAgent
 from CybORG.Shared.Results import Results
 from PPO.PPO import PPO
-from Agents.ICM_template import ICM
+from Agents.ICM import ICM
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

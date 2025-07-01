@@ -3,9 +3,7 @@ from CybORG.Agents import BaseAgent
 from CybORG.Shared.Results import Results
 from PPO.PPO import PPO
 
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 class PPOAgent(BaseAgent):
     """Wraps the :class:`PPO` algorithm in a CybORG agent interface."""
